@@ -1,32 +1,27 @@
-import { Switch, Route, Router as WouterRouter } from "wouter";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Toaster } from "@/components/ui/toaster";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import NotFound from "@/pages/not-found";
-import Home from "@/pages/Home";
+import { useState } from "react";
+import { AnimatePresence } from "framer-motion";
+import BootScreen from "@/components/BootScreen";
+import LoginScreen from "@/components/LoginScreen";
+import Desktop from "@/components/Desktop";
 
-const queryClient = new QueryClient();
+type Phase = "boot" | "login" | "desktop";
 
-function Router() {
+export default function App() {
+  const [phase, setPhase] = useState<Phase>("boot");
+
   return (
-    <Switch>
-      <Route path="/" component={Home} />
-      <Route component={NotFound} />
-    </Switch>
+    <div className="w-screen h-screen overflow-hidden bg-black select-none">
+      <AnimatePresence mode="wait">
+        {phase === "boot" && (
+          <BootScreen key="boot" onComplete={() => setPhase("login")} />
+        )}
+        {phase === "login" && (
+          <LoginScreen key="login" onLogin={() => setPhase("desktop")} />
+        )}
+        {phase === "desktop" && (
+          <Desktop key="desktop" />
+        )}
+      </AnimatePresence>
+    </div>
   );
 }
-
-function App() {
-  return (
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
-          <Router />
-        </WouterRouter>
-        <Toaster />
-      </TooltipProvider>
-    </QueryClientProvider>
-  );
-}
-
-export default App;
