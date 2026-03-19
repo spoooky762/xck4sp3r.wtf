@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState, useEffect, useRef } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import Window from "@/components/desktop/Window";
 import Taskbar from "@/components/desktop/Taskbar";
 import AboutWindow from "@/components/windows/AboutWindow";
@@ -21,79 +21,89 @@ interface WindowConfig {
 }
 
 const windowConfigs: WindowConfig[] = [
-  {
-    id: "about",
-    title: "About — ck4sp3r",
-    icon: "👤",
-    defaultX: 80,
-    defaultY: 60,
-    width: 420,
-    component: <AboutWindow />,
-  },
-  {
-    id: "projects",
-    title: "Projects",
-    icon: "💼",
-    defaultX: 200,
-    defaultY: 80,
-    width: 520,
-    component: <ProjectsWindow />,
-  },
-  {
-    id: "skills",
-    title: "Skills",
-    icon: "⚡",
-    defaultX: 320,
-    defaultY: 100,
-    width: 420,
-    component: <SkillsWindow />,
-  },
-  {
-    id: "terminal",
-    title: "Terminal",
-    icon: "⌨️",
-    defaultX: 140,
-    defaultY: 120,
-    width: 560,
-    component: <TerminalWindow />,
-  },
-  {
-    id: "contact",
-    title: "Contact",
-    icon: "✉️",
-    defaultX: 260,
-    defaultY: 90,
-    width: 380,
-    component: <ContactWindow />,
-  },
+  { id: "about",    title: "ABOUT — ck4sp3r",  icon: "👤", defaultX: 90,  defaultY: 50,  width: 420, component: <AboutWindow /> },
+  { id: "projects", title: "PROJECTS",           icon: "💼", defaultX: 180, defaultY: 60,  width: 520, component: <ProjectsWindow /> },
+  { id: "skills",   title: "SKILLS",             icon: "⚡", defaultX: 270, defaultY: 70,  width: 430, component: <SkillsWindow /> },
+  { id: "terminal", title: "TERMINAL — ck4sp3r", icon: "⌨", defaultX: 150, defaultY: 80,  width: 580, component: <TerminalWindow /> },
+  { id: "contact",  title: "CONTACT",            icon: "✉", defaultX: 220, defaultY: 90,  width: 390, component: <ContactWindow /> },
 ];
 
 const desktopIcons: { id: WindowId; icon: string; label: string }[] = [
-  { id: "about", icon: "👤", label: "About.txt" },
-  { id: "projects", icon: "💼", label: "Projects" },
-  { id: "skills", icon: "⚡", label: "Skills.json" },
-  { id: "terminal", icon: "⌨️", label: "Terminal" },
-  { id: "contact", icon: "✉️", label: "Contact.vcard" },
+  { id: "about",    icon: "👤", label: "ABOUT.TXT" },
+  { id: "projects", icon: "💼", label: "PROJECTS/" },
+  { id: "skills",   icon: "⚡", label: "SKILLS.JSON" },
+  { id: "terminal", icon: "⌨", label: "TERMINAL" },
+  { id: "contact",  icon: "✉", label: "CONTACT.VCF" },
 ];
+
+function MatrixRain() {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    const resize = () => {
+      canvas.width = canvas.offsetWidth;
+      canvas.height = canvas.offsetHeight;
+    };
+    resize();
+    window.addEventListener("resize", resize);
+
+    const fontSize = 14;
+    const cols = Math.floor(canvas.width / fontSize);
+    const drops: number[] = Array(cols).fill(1);
+    const chars = "ア イ ウ エ オ カ キ ク ケ コ サ シ ス セ ソ タ チ ツ テ ト ナ ニ ヌ ネ ノ 0 1 2 3 4 5 6 7 8 9 A B C D E F".split(" ");
+
+    const draw = () => {
+      ctx.fillStyle = "rgba(0,0,0,0.05)";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = "#00ff41";
+      ctx.font = `${fontSize}px monospace`;
+
+      for (let i = 0; i < drops.length; i++) {
+        const char = chars[Math.floor(Math.random() * chars.length)];
+        ctx.fillText(char, i * fontSize, drops[i] * fontSize);
+        if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+          drops[i] = 0;
+        }
+        drops[i]++;
+      }
+    };
+
+    const interval = setInterval(draw, 50);
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener("resize", resize);
+    };
+  }, []);
+
+  return (
+    <canvas
+      ref={canvasRef}
+      style={{ position: "absolute", inset: 0, width: "100%", height: "100%", opacity: 0.07, pointerEvents: "none" }}
+    />
+  );
+}
 
 export default function Desktop() {
   const [openWindows, setOpenWindows] = useState<WindowId[]>(["about"]);
   const [zOrders, setZOrders] = useState<WindowId[]>(["about"]);
 
   const openWindow = (id: WindowId) => {
-    if (!openWindows.includes(id)) {
-      setOpenWindows((prev) => [...prev, id]);
-    }
+    if (!openWindows.includes(id)) setOpenWindows((p) => [...p, id]);
     focusWindow(id);
   };
 
   const closeWindow = (id: WindowId) => {
-    setOpenWindows((prev) => prev.filter((w) => w !== id));
-    setZOrders((prev) => prev.filter((w) => w !== id));
+    setOpenWindows((p) => p.filter((w) => w !== id));
+    setZOrders((p) => p.filter((w) => w !== id));
   };
 
   const focusWindow = (id: WindowId) => {
-    setZOrders((prev) => [...prev.filter((w) => w !== id), id]);
+    setZOrders((p) => [...p.filter((w) => w !== id), id]);
   };
 
   const getZ = (id: WindowId) => {
@@ -103,66 +113,67 @@ export default function Desktop() {
 
   return (
     <motion.div
-      className="w-full h-full relative overflow-hidden"
+      style={{ width: "100%", height: "100%", position: "absolute", inset: 0, overflow: "hidden", background: "var(--theme-background)" }}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      transition={{ duration: 0.6 }}
-      style={{
-        background: `
-          radial-gradient(ellipse at 20% 50%, rgba(30,58,95,0.4) 0%, transparent 60%),
-          radial-gradient(ellipse at 80% 20%, rgba(88,28,135,0.25) 0%, transparent 50%),
-          radial-gradient(ellipse at 60% 80%, rgba(14,59,77,0.3) 0%, transparent 55%),
-          #080810
-        `,
-      }}
+      transition={{ duration: 0.5 }}
     >
-      <div
-        className="absolute inset-0 opacity-[0.025]"
-        style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
-          backgroundRepeat: "repeat",
-          backgroundSize: "128px",
-        }}
-      />
+      <MatrixRain />
 
       <div
-        className="absolute inset-0 opacity-[0.03]"
         style={{
-          backgroundImage: `linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)`,
-          backgroundSize: "48px 48px",
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          padding: "0 1.5ch",
+          height: "32px",
+          borderBottom: "1px solid var(--theme-border)",
+          background: "var(--theme-background)",
+          zIndex: 5,
+          fontFamily: "var(--font-family-mono)",
+          fontSize: "11px",
         }}
-      />
-
-      <div className="absolute top-4 right-4 flex flex-col gap-1 items-end">
-        <span className="text-white/20 text-[10px] font-mono tracking-widest uppercase">CK4SP3ROS v1.0</span>
+      >
+        <span style={{ color: "var(--theme-text)", letterSpacing: "0.08em" }}>CK4SP3ROS</span>
+        <span style={{ color: "var(--theme-border)" }}>v1.0.0 — reborn</span>
       </div>
 
-      <div className="absolute top-16 left-6 flex flex-col gap-4">
+      <div
+        style={{
+          position: "absolute",
+          top: "48px",
+          left: "1.5ch",
+          display: "flex",
+          flexDirection: "column",
+          gap: "0.75rem",
+          zIndex: 4,
+        }}
+      >
         {desktopIcons.map((icon) => (
           <motion.button
             key={icon.id}
-            className="flex flex-col items-center gap-1.5 group w-16"
-            onDoubleClick={() => openWindow(icon.id)}
             onClick={() => openWindow(icon.id)}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: "4px",
+              background: openWindows.includes(icon.id) ? "var(--theme-focused-foreground)" : "transparent",
+              border: openWindows.includes(icon.id) ? "1px solid var(--theme-border)" : "1px solid transparent",
+              padding: "6px 8px",
+              cursor: "pointer",
+              fontFamily: "var(--font-family-mono)",
+              width: "9ch",
+            }}
+            whileHover={{ background: "var(--theme-focused-foreground)", borderColor: "var(--theme-border)" }}
+            transition={{ duration: 0.1 }}
           >
-            <div
-              className={`w-12 h-12 rounded-xl flex items-center justify-center text-2xl transition-all ${
-                openWindows.includes(icon.id)
-                  ? "bg-white/20 ring-1 ring-white/30"
-                  : "bg-white/[0.06] hover:bg-white/[0.12]"
-              }`}
-              style={{ backdropFilter: "blur(8px)" }}
-            >
-              {icon.icon}
-            </div>
-            <span
-              className="text-white text-[10px] text-center leading-tight px-1 rounded"
-              style={{
-                textShadow: "0 1px 4px rgba(0,0,0,0.8)",
-              }}
-            >
+            <span style={{ fontSize: "20px" }}>{icon.icon}</span>
+            <span style={{ color: "var(--theme-text)", fontSize: "10px", textAlign: "center", letterSpacing: "0.04em", lineHeight: 1.3, wordBreak: "break-all" }}>
               {icon.label}
             </span>
           </motion.button>

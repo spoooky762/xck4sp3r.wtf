@@ -388,6 +388,10 @@ importers:
         version: 3.25.76
 
   artifacts/personal-profile:
+    dependencies:
+      srcl-tailwind:
+        specifier: ^1.1.5
+        version: 1.1.5(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(tailwindcss@4.2.1)
     devDependencies:
       '@hookform/resolvers':
         specifier: ^3.10.0
@@ -2808,6 +2812,14 @@ packages:
   split2@4.2.0:
     resolution: {integrity: sha512-UcjcJOWknrNkF6PLX83qcHM6KHgVKNkV62Y8a5uYDVv9ydGQVwAHMKqHdJje1VTWpljG0WYpCDhrCdAOYH4TWg==}
     engines: {node: '>= 10.x'}
+
+  srcl-tailwind@1.1.5:
+    resolution: {integrity: sha512-mHlUKV7tS8r3tAJOMox+8vaOWFO2nEpWxI6uTJ5J0ug/V4/j6JZ95oYIJYMHsSnUyxjS6fK0XRcXaIfhHPnJCg==}
+    engines: {node: '>=18'}
+    peerDependencies:
+      react: ^18.0.0 || ^19.0.0
+      react-dom: ^18.0.0 || ^19.0.0
+      tailwindcss: ^3.0.0
 
   statuses@2.0.2:
     resolution: {integrity: sha512-DvEy55V3DB7uknRo+4iOGT5fP1slR8wQohVdknigZPMpMstaKJQWhwiYBACJE3Ul2pTnATihhBYnRhZQHGBiRw==}
@@ -5294,6 +5306,13 @@ snapshots:
   source-map-js@1.2.1: {}
 
   split2@4.2.0: {}
+
+  srcl-tailwind@1.1.5(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(tailwindcss@4.2.1):
+    dependencies:
+      clsx: 2.1.1
+      react: 19.1.0
+      react-dom: 19.1.0(react@19.1.0)
+      tailwindcss: 4.2.1
 
   statuses@2.0.2: {}
 

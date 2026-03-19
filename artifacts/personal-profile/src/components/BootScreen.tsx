@@ -6,100 +6,97 @@ interface BootScreenProps {
 }
 
 const bootMessages = [
-  "[ OK ] Initializing system...",
-  "[ OK ] Loading kernel modules...",
-  "[ OK ] Starting NetworkManager...",
-  "[ OK ] Mounting filesystems...",
-  "[ OK ] Starting display server...",
-  "[ FAILED ] Failed to start: Social Life...",
-  "[ OK ] Loading user profile: ck4sp3r...",
-  "[ OK ] Starting desktop environment...",
+  { ok: true,  text: "Initializing kernel modules..." },
+  { ok: true,  text: "Loading NetworkManager..." },
+  { ok: true,  text: "Mounting filesystems..." },
+  { ok: true,  text: "Starting display server..." },
+  { ok: false, text: "Failed to start: Social Life..." },
+  { ok: true,  text: "Loading user profile: ck4sp3r..." },
+  { ok: true,  text: "Starting desktop environment..." },
+  { ok: true,  text: "System ready." },
 ];
 
 export default function BootScreen({ onComplete }: BootScreenProps) {
   const [progress, setProgress] = useState(0);
-  const [messages, setMessages] = useState<string[]>([]);
-  const [showLogo, setShowLogo] = useState(true);
+  const [msgCount, setMsgCount] = useState(0);
 
   useEffect(() => {
-    const totalDuration = 3800;
-    const interval = 50;
-    const steps = totalDuration / interval;
+    const total = 4200;
+    const tick = 40;
+    const steps = total / tick;
     let step = 0;
 
     const timer = setInterval(() => {
       step++;
-      const newProgress = Math.min((step / steps) * 100, 100);
-      setProgress(newProgress);
+      const p = Math.min((step / steps) * 100, 100);
+      setProgress(p);
+      setMsgCount(Math.floor((p / 100) * bootMessages.length));
 
-      const messageIndex = Math.floor((newProgress / 100) * bootMessages.length);
-      setMessages(bootMessages.slice(0, messageIndex));
-
-      if (newProgress >= 100) {
+      if (p >= 100) {
         clearInterval(timer);
-        setShowLogo(false);
-        setTimeout(onComplete, 600);
+        setTimeout(onComplete, 700);
       }
-    }, interval);
+    }, tick);
 
     return () => clearInterval(timer);
   }, [onComplete]);
 
+  const bars = 30;
+  const filled = Math.round((progress / 100) * bars);
+
   return (
     <motion.div
-      className="w-full h-full bg-black flex flex-col items-center justify-center"
+      className="w-full h-full flex flex-col items-center justify-center"
+      style={{ background: "var(--theme-background)", position: "absolute", inset: 0 }}
       initial={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      transition={{ duration: 0.5 }}
+      transition={{ duration: 0.4 }}
     >
-      {showLogo && (
-        <motion.div
-          className="flex flex-col items-center gap-6"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.8 }}
-        >
-          <div className="text-center">
-            <p className="text-[11px] text-gray-500 tracking-widest uppercase mb-1">ck4sp3r.dev</p>
-            <h1 className="text-4xl font-bold text-white tracking-tight">
-              CK4SP3R<span className="text-[#e05a2b] text-2xl align-super font-normal">OS</span>
-            </h1>
-            <p className="text-gray-400 text-sm mt-1 tracking-wide">Reborn</p>
+      <motion.div
+        style={{ width: "38ch", display: "flex", flexDirection: "column", gap: "1rem" }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.6 }}
+      >
+        <div style={{ marginBottom: "0.5rem" }}>
+          <div style={{ color: "var(--theme-border)", fontSize: "11px", letterSpacing: "0.1em" }}>
+            ck4sp3r.dev©
           </div>
-
-          <div className="w-52 mt-2">
-            <div className="w-full h-[3px] bg-gray-800 rounded-full overflow-hidden">
-              <motion.div
-                className="h-full bg-white rounded-full"
-                style={{ width: `${progress}%` }}
-                transition={{ ease: "linear" }}
-              />
-            </div>
+          <div style={{ fontSize: "22px", fontWeight: 700, color: "var(--theme-text)", lineHeight: 1.2 }}>
+            CK4SP3R<sup style={{ fontSize: "12px", color: "var(--theme-border)", fontWeight: 400 }}>OS</sup>
           </div>
+          <div style={{ color: "var(--theme-border)", fontSize: "13px" }}>Reborn</div>
+        </div>
 
-          {messages.length > 0 && (
+        <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+          <div style={{ fontFamily: "var(--font-family-mono)", fontSize: "12px", color: "var(--theme-text)", letterSpacing: "0.05em" }}>
+            {"█".repeat(filled)}<span style={{ opacity: 0.2 }}>{"░".repeat(bars - filled)}</span>
+            {" "}{Math.round(progress)}%
+          </div>
+        </div>
+
+        <div style={{ display: "flex", flexDirection: "column", gap: "2px", marginTop: "0.25rem" }}>
+          {bootMessages.slice(0, msgCount).map((msg, i) => (
             <motion.div
-              className="absolute bottom-16 left-16 text-left"
+              key={i}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
+              transition={{ duration: 0.08 }}
+              style={{
+                fontSize: "11px",
+                fontFamily: "var(--font-family-mono)",
+                color: msg.ok ? "var(--theme-border)" : "#ff4040",
+                lineHeight: 1.6,
+              }}
             >
-              {messages.map((msg, i) => (
-                <motion.p
-                  key={i}
-                  className={`text-[11px] font-mono mb-0.5 ${
-                    msg.includes("FAILED") ? "text-red-500" : "text-gray-500"
-                  }`}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 0.1 }}
-                >
-                  {msg}
-                </motion.p>
-              ))}
+              <span style={{ color: msg.ok ? "var(--theme-text)" : "#ff4040" }}>
+                [{msg.ok ? " OK " : "FAIL"}]
+              </span>{" "}
+              {msg.text}
             </motion.div>
-          )}
-        </motion.div>
-      )}
+          ))}
+        </div>
+      </motion.div>
     </motion.div>
   );
 }

@@ -7,11 +7,11 @@ interface TaskbarProps {
 }
 
 const dockApps = [
-  { id: "about", icon: "👤", label: "About" },
-  { id: "projects", icon: "💼", label: "Projects" },
-  { id: "skills", icon: "⚡", label: "Skills" },
-  { id: "terminal", icon: "⌨️", label: "Terminal" },
-  { id: "contact", icon: "✉️", label: "Contact" },
+  { id: "about",    icon: "👤", label: "ABOUT" },
+  { id: "projects", icon: "💼", label: "PROJECTS" },
+  { id: "skills",   icon: "⚡", label: "SKILLS" },
+  { id: "terminal", icon: "⌨", label: "TERMINAL" },
+  { id: "contact",  icon: "✉", label: "CONTACT" },
 ];
 
 function Clock() {
@@ -21,12 +21,10 @@ function Clock() {
     return () => clearInterval(t);
   }, []);
   return (
-    <div className="text-right">
-      <div className="text-white text-xs font-medium tabular-nums">
-        {time.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })}
-      </div>
-      <div className="text-gray-500 text-[10px]">
-        {time.toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+    <div style={{ textAlign: "right", fontFamily: "var(--font-family-mono)", fontSize: "var(--font-size)", color: "var(--theme-text)" }}>
+      <div>{time.toLocaleTimeString("en-US", { hour12: false })}</div>
+      <div style={{ color: "var(--theme-border)", fontSize: "11px" }}>
+        {time.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
       </div>
     </div>
   );
@@ -35,47 +33,66 @@ function Clock() {
 export default function Taskbar({ openWindows, onOpenWindow }: TaskbarProps) {
   return (
     <motion.div
-      className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-1 px-4 py-2 rounded-2xl border border-white/10"
       style={{
-        background: "rgba(20,20,22,0.85)",
-        backdropFilter: "blur(24px)",
-        WebkitBackdropFilter: "blur(24px)",
-        boxShadow: "0 8px 32px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.06)",
+        position: "absolute",
+        bottom: "1rem",
+        left: "50%",
+        translateX: "-50%",
+        display: "flex",
+        alignItems: "center",
+        gap: "0",
+        boxShadow: "inset 0 0 0 2px var(--theme-text)",
+        background: "var(--theme-background)",
+        padding: "0 1ch",
       }}
       initial={{ y: 80, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
-      transition={{ type: "spring", stiffness: 300, damping: 30, delay: 0.3 }}
+      transition={{ type: "spring", stiffness: 280, damping: 30, delay: 0.2 }}
     >
-      {dockApps.map((app) => (
-        <motion.button
-          key={app.id}
-          onClick={() => onOpenWindow(app.id)}
-          className="relative flex flex-col items-center group"
-          whileHover={{ scale: 1.2, y: -6 }}
-          whileTap={{ scale: 0.95 }}
-          transition={{ type: "spring", stiffness: 400, damping: 20 }}
-        >
-          <div
-            className={`w-12 h-12 rounded-xl flex items-center justify-center text-2xl transition-all ${
-              openWindows.includes(app.id)
-                ? "bg-white/15 shadow-inner"
-                : "bg-white/5 hover:bg-white/10"
-            }`}
+      {dockApps.map((app, i) => (
+        <div key={app.id} style={{ display: "flex", alignItems: "stretch" }}>
+          <motion.button
+            onClick={() => onOpenWindow(app.id)}
+            style={{
+              background: openWindows.includes(app.id) ? "var(--theme-focused-foreground)" : "none",
+              border: "none",
+              borderRight: "2px solid var(--theme-text)",
+              color: "var(--theme-text)",
+              fontFamily: "var(--font-family-mono)",
+              fontSize: "11px",
+              cursor: "pointer",
+              padding: "0.5rem 1.5ch",
+              letterSpacing: "0.08em",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: "2px",
+              minWidth: "7ch",
+              position: "relative",
+            }}
+            whileHover={{ background: "var(--theme-focused-foreground)" }}
+            transition={{ duration: 0.1 }}
           >
-            {app.icon}
-          </div>
-          <span className="absolute -top-8 bg-gray-900 text-white text-[10px] px-2 py-0.5 rounded-md opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none border border-white/10">
-            {app.label}
-          </span>
-          {openWindows.includes(app.id) && (
-            <div className="absolute -bottom-1 w-1 h-1 bg-white rounded-full" />
-          )}
-        </motion.button>
+            <span style={{ fontSize: "16px" }}>{app.icon}</span>
+            <span>{app.label}</span>
+            {openWindows.includes(app.id) && (
+              <span style={{ position: "absolute", bottom: 0, left: "50%", transform: "translateX(-50%)", color: "var(--theme-text)", fontSize: "8px" }}>▲</span>
+            )}
+          </motion.button>
+          {i === dockApps.length - 1 && null}
+        </div>
       ))}
 
-      <div className="w-px h-8 bg-white/10 mx-1" />
+      <div
+        style={{
+          width: "2px",
+          alignSelf: "stretch",
+          background: "var(--theme-text)",
+          margin: "0",
+        }}
+      />
 
-      <div className="px-2">
+      <div style={{ padding: "0.5rem 1.5ch" }}>
         <Clock />
       </div>
     </motion.div>

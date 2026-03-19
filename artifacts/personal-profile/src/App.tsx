@@ -10,7 +10,7 @@ export default function App() {
   const [phase, setPhase] = useState<Phase>("boot");
 
   return (
-    <div className="w-screen h-screen overflow-hidden bg-black select-none">
+    <div className="w-screen h-screen overflow-hidden" style={{ background: "var(--theme-background)" }}>
       <AnimatePresence mode="wait">
         {phase === "boot" && (
           <BootScreen key="boot" onComplete={() => setPhase("login")} />

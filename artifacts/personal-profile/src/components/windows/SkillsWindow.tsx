@@ -1,29 +1,26 @@
 const skills = [
   {
-    category: "Languages",
-    icon: "⌨️",
+    category: "LANGUAGES",
     items: [
       { name: "TypeScript", level: 92 },
       { name: "Python", level: 88 },
       { name: "Rust", level: 74 },
       { name: "Go", level: 70 },
-      { name: "Bash", level: 85 },
+      { name: "Bash/Shell", level: 85 },
     ],
   },
   {
-    category: "Frameworks & Tools",
-    icon: "⚙️",
+    category: "FRAMEWORKS & TOOLS",
     items: [
       { name: "React / Next.js", level: 90 },
-      { name: "Node.js", level: 86 },
-      { name: "Docker / K8s", level: 78 },
-      { name: "Linux / Sys Admin", level: 84 },
+      { name: "Node.js / Express", level: 86 },
+      { name: "Docker / Kubernetes", level: 78 },
+      { name: "Linux / SysAdmin", level: 84 },
       { name: "Git / CI/CD", level: 88 },
     ],
   },
   {
-    category: "Security",
-    icon: "🔐",
+    category: "SECURITY",
     items: [
       { name: "Network Analysis", level: 82 },
       { name: "Penetration Testing", level: 75 },
@@ -33,34 +30,41 @@ const skills = [
   },
 ];
 
+function SkillBar({ name, level }: { name: string; level: number }) {
+  const blocks = 20;
+  const filled = Math.round((level / 100) * blocks);
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: "1.5ch", marginBottom: "0.4rem" }}>
+      <span style={{ color: "var(--theme-border)", fontSize: "12px", width: "16ch", flexShrink: 0 }}>{name}</span>
+      <span style={{ color: "var(--theme-text)", fontSize: "12px", fontFamily: "var(--font-family-mono)", letterSpacing: "0" }}>
+        {"█".repeat(filled)}
+        <span style={{ opacity: 0.2 }}>{"░".repeat(blocks - filled)}</span>
+      </span>
+      <span style={{ color: "var(--theme-border)", fontSize: "11px", marginLeft: "auto", flexShrink: 0 }}>{level}%</span>
+    </div>
+  );
+}
+
 export default function SkillsWindow() {
   return (
-    <div className="p-5 space-y-6">
-      {skills.map((group) => (
-        <div key={group.category}>
-          <h3 className="text-white text-xs font-semibold uppercase tracking-widest mb-3 flex items-center gap-2">
-            <span>{group.icon}</span>
+    <div style={{ padding: "1rem 1.5ch", fontFamily: "var(--font-family-mono)" }}>
+      {skills.map((group, i) => (
+        <div key={group.category} style={{ marginBottom: i < skills.length - 1 ? "1.25rem" : 0 }}>
+          <div
+            style={{
+              color: "var(--theme-text)",
+              fontSize: "11px",
+              letterSpacing: "0.12em",
+              marginBottom: "0.75rem",
+              paddingBottom: "0.25rem",
+              borderBottom: "1px solid var(--theme-border)",
+            }}
+          >
             {group.category}
-          </h3>
-          <div className="space-y-2.5">
-            {group.items.map((skill) => (
-              <div key={skill.name}>
-                <div className="flex justify-between mb-1">
-                  <span className="text-gray-400 text-xs font-mono">{skill.name}</span>
-                  <span className="text-gray-600 text-[10px] font-mono">{skill.level}%</span>
-                </div>
-                <div className="h-[3px] bg-white/[0.06] rounded-full overflow-hidden">
-                  <div
-                    className="h-full rounded-full"
-                    style={{
-                      width: `${skill.level}%`,
-                      background: "linear-gradient(90deg, #3b82f6 0%, #8b5cf6 100%)",
-                    }}
-                  />
-                </div>
-              </div>
-            ))}
           </div>
+          {group.items.map((skill) => (
+            <SkillBar key={skill.name} name={skill.name} level={skill.level} />
+          ))}
         </div>
       ))}
     </div>

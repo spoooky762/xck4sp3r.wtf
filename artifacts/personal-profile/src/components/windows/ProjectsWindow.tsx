@@ -3,21 +3,21 @@ const projects = [
     name: "NetScan Pro",
     desc: "Advanced network scanner with real-time port analysis, service detection, and vulnerability mapping.",
     tags: ["Python", "Scapy", "React"],
-    status: "Active",
+    status: "ACTIVE",
     stars: "★ 284",
   },
   {
     name: "ShadowProxy",
     desc: "Lightweight anonymization proxy with multi-hop routing and traffic obfuscation capabilities.",
     tags: ["Go", "WireGuard", "Docker"],
-    status: "Maintained",
+    status: "MAINTAINED",
     stars: "★ 571",
   },
   {
     name: "TermKit",
-    desc: "A plugin-based terminal toolkit — themes, snippets, session manager, and AI autocomplete built in.",
+    desc: "A plugin-based terminal toolkit with themes, snippets, session manager, and AI autocomplete.",
     tags: ["Rust", "TypeScript", "Wasm"],
-    status: "Beta",
+    status: "BETA",
     stars: "★ 129",
   },
   {
@@ -29,40 +29,54 @@ const projects = [
   },
 ];
 
-const statusColors: Record<string, string> = {
-  Active: "text-green-400",
-  Maintained: "text-blue-400",
-  Beta: "text-yellow-400",
-  "v1.0": "text-purple-400",
-};
-
 export default function ProjectsWindow() {
   return (
-    <div className="p-4 space-y-3">
-      {projects.map((project) => (
+    <div style={{ padding: "1rem 1.5ch", fontFamily: "var(--font-family-mono)", display: "flex", flexDirection: "column", gap: "0" }}>
+      {projects.map((project, i) => (
         <div
           key={project.name}
-          className="p-4 rounded-xl border border-white/[0.07] hover:border-white/[0.14] transition-all group"
-          style={{ background: "rgba(255,255,255,0.02)" }}
+          style={{
+            padding: "0.75rem 1ch",
+            borderBottom: i < projects.length - 1 ? "1px solid var(--theme-border)" : "none",
+          }}
         >
-          <div className="flex items-start justify-between mb-2">
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "0.4rem" }}>
             <div>
-              <h3 className="text-white text-sm font-semibold group-hover:text-blue-300 transition-colors">
+              <span style={{ color: "var(--theme-text)", fontSize: "14px", fontWeight: 600 }}>
                 {project.name}
-              </h3>
-              <span className={`text-[10px] font-mono ${statusColors[project.status] ?? "text-gray-400"}`}>
-                ● {project.status}
+              </span>
+              <span
+                style={{
+                  marginLeft: "1.5ch",
+                  fontSize: "10px",
+                  color: "var(--theme-border)",
+                  letterSpacing: "0.08em",
+                  border: "1px solid var(--theme-border)",
+                  padding: "0 0.5ch",
+                }}
+              >
+                {project.status}
               </span>
             </div>
-            <span className="text-gray-600 text-[11px] font-mono">{project.stars}</span>
+            <span style={{ color: "var(--theme-border)", fontSize: "11px" }}>{project.stars}</span>
           </div>
-          <p className="text-gray-400 text-xs leading-relaxed mb-3">{project.desc}</p>
-          <div className="flex flex-wrap gap-1.5">
+
+          <div style={{ color: "var(--theme-border)", fontSize: "12px", lineHeight: 1.6, marginBottom: "0.5rem" }}>
+            {project.desc}
+          </div>
+
+          <div style={{ display: "flex", gap: "1ch", flexWrap: "wrap" }}>
             {project.tags.map((tag) => (
               <span
                 key={tag}
-                className="text-[10px] px-2 py-0.5 rounded-md text-gray-400 border border-white/[0.08]"
-                style={{ background: "rgba(255,255,255,0.03)" }}
+                style={{
+                  fontSize: "11px",
+                  color: "var(--theme-text)",
+                  background: "var(--theme-background-input)",
+                  padding: "0 0.75ch",
+                  border: "1px solid var(--theme-border)",
+                  letterSpacing: "0.05em",
+                }}
               >
                 {tag}
               </span>

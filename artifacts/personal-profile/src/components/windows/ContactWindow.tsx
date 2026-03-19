@@ -1,46 +1,88 @@
 const links = [
-  { label: "GitHub", handle: "@ck4sp3r", icon: "⌥", href: "https://github.com" },
-  { label: "Twitter / X", handle: "@ck4sp3r", icon: "✕", href: "https://twitter.com" },
-  { label: "LinkedIn", handle: "ck4sp3r", icon: "in", href: "https://linkedin.com" },
-  { label: "Email", handle: "ck4sp3r@proton.me", icon: "✉", href: "mailto:ck4sp3r@proton.me" },
+  { label: "GITHUB", handle: "github.com/ck4sp3r", href: "https://github.com", prefix: "gh://" },
+  { label: "TWITTER", handle: "@ck4sp3r", href: "https://twitter.com", prefix: "tw://" },
+  { label: "LINKEDIN", handle: "ck4sp3r", href: "https://linkedin.com", prefix: "li://" },
+  { label: "EMAIL", handle: "ck4sp3r@proton.me", href: "mailto:ck4sp3r@proton.me", prefix: "mail://" },
 ];
 
 export default function ContactWindow() {
   return (
-    <div className="p-6">
-      <div className="mb-6 text-center">
-        <div className="text-3xl mb-2">👋</div>
-        <h2 className="text-white font-semibold mb-1">Let's Connect</h2>
-        <p className="text-gray-500 text-xs">
-          Open to interesting projects, collaborations, or just a good convo.
-        </p>
+    <div style={{ padding: "1rem 1.5ch", fontFamily: "var(--font-family-mono)" }}>
+      <div
+        style={{
+          color: "var(--theme-border)",
+          fontSize: "12px",
+          lineHeight: 1.7,
+          marginBottom: "1.25rem",
+          borderLeft: "3px solid var(--theme-text)",
+          paddingLeft: "1ch",
+        }}
+      >
+        Open to interesting projects, collaborations,<br />
+        or just a good conversation about tech.
       </div>
 
-      <div className="space-y-2">
-        {links.map((link) => (
+      <div style={{ display: "flex", flexDirection: "column" }}>
+        {links.map((link, i) => (
           <a
             key={link.label}
             href={link.href}
             target="_blank"
             rel="noreferrer"
-            className="flex items-center gap-4 p-3 rounded-xl border border-white/[0.07] hover:border-white/[0.15] hover:bg-white/[0.03] transition-all group"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "1.5ch",
+              padding: "0.6rem 0",
+              borderBottom: i < links.length - 1 ? "1px solid var(--theme-border)" : "none",
+              textDecoration: "none",
+              color: "inherit",
+            }}
           >
-            <div className="w-9 h-9 rounded-lg bg-white/[0.05] flex items-center justify-center text-sm text-gray-400 font-mono group-hover:text-white transition-colors border border-white/[0.07]">
-              {link.icon}
-            </div>
-            <div>
-              <div className="text-white text-sm font-medium group-hover:text-blue-300 transition-colors">{link.label}</div>
-              <div className="text-gray-500 text-xs font-mono">{link.handle}</div>
-            </div>
-            <div className="ml-auto text-gray-700 group-hover:text-gray-400 transition-colors text-sm">↗</div>
+            <span style={{ color: "var(--theme-border)", fontSize: "11px", width: "9ch", flexShrink: 0, letterSpacing: "0.05em" }}>
+              {link.label}
+            </span>
+            <span style={{ color: "var(--theme-text)", fontSize: "13px" }}>
+              <span style={{ opacity: 0.4 }}>{link.prefix}</span>
+              {link.handle}
+            </span>
+            <span style={{ marginLeft: "auto", color: "var(--theme-border)", fontSize: "12px" }}>↗</span>
           </a>
         ))}
       </div>
 
-      <div className="mt-5 p-3 rounded-xl border border-white/[0.06] bg-white/[0.02] text-center">
-        <p className="text-gray-600 text-[11px] font-mono">
-          PGP fingerprint: <span className="text-gray-400">4A3B 9F2E C1D7 8506</span>
-        </p>
+      <div style={{ marginTop: "1.25rem" }}>
+        <button
+          onClick={() => window.open("mailto:ck4sp3r@proton.me")}
+          style={{
+            background: "var(--theme-text)",
+            color: "var(--theme-background)",
+            border: "2px solid var(--theme-text)",
+            fontFamily: "var(--font-family-mono)",
+            fontSize: "12px",
+            letterSpacing: "0.1em",
+            padding: "0.5rem 1.5ch",
+            cursor: "pointer",
+            width: "100%",
+            textAlign: "center",
+          }}
+        >
+          SEND MESSAGE →
+        </button>
+      </div>
+
+      <div
+        style={{
+          marginTop: "1rem",
+          padding: "0.5rem 1ch",
+          background: "var(--theme-background-input)",
+          fontSize: "11px",
+          color: "var(--theme-border)",
+          letterSpacing: "0.04em",
+          border: "1px solid var(--theme-border)",
+        }}
+      >
+        PGP: <span style={{ color: "var(--theme-text)" }}>4A3B 9F2E C1D7 8506 3A1C</span>
       </div>
     </div>
   );
